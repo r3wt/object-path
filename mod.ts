@@ -1,7 +1,7 @@
 type Setter = (obj:any,path:string,value:any) => true | false;
 type Getter = (obj:any,path:string) => unknown | undefined;
 type Parser = (path:string) => string[];
-type Configure = (options: Partial<ObjectPathConfig>) => ObjectPathConfig;
+type Configure = (options: any) => ObjectPathConfig;
 type ObjectPathConfig = {
     seperator:'.'|','|'/'|RegExp;
     defaultUnsetValue: any;
@@ -21,7 +21,7 @@ export default function createObjectPathInstance(options?:Partial<ObjectPathConf
         autoCreate: false
     };
 
-    const configure:Configure = (options) => {
+    const configure:Configure = (options={}) => {
         for(let k in config) {
             if(options.hasOwnProperty(k)){
                 config[k as keyof ObjectPathConfig] = options[k as keyof Partial<ObjectPathConfig>] as Pick<ObjectPathConfig,any>;
@@ -39,7 +39,7 @@ export default function createObjectPathInstance(options?:Partial<ObjectPathConf
         if(p.length){
             let o = obj;
             for(let i=0;i<p.length-1;i++) {
-                if(p[i] in o){
+                if(o!==null&&typeof o==='object'&& o[p[i]]!==undefined){
                     o = o[p[i]];
                 }else{
                     if(config.autoCreate){
@@ -58,7 +58,11 @@ export default function createObjectPathInstance(options?:Partial<ObjectPathConf
         const p = parse(path);
         let v = obj;
         for(let i=0;i<p.length;i++) {
-            v=v[p[i]];
+            if(v!==null&&typeof v==='object'&&v[p[i]]!==undefined){
+                v=v[p[i]];
+            }else{
+                return config.defaultUnsetValue;
+            }
         }
         return v;
     };

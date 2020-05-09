@@ -2,6 +2,14 @@ import { assert, assertEquals, assertThrows } from "https://deno.land/std/testin
 
 import create from './mod.ts';
 
+Deno.test('ensure configure can be called correctly from create() if options are passed',():void=>{
+    const { configure } = create({
+        defaultUnsetValue: null
+    });
+    let configuration = configure({});
+    assertEquals(configuration.defaultUnsetValue,null);
+});
+
 Deno.test('ensures correct behavior of configure() function',():void=>{
     const { configure, parse, set, get } = create();
     const options = {
