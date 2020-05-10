@@ -57,3 +57,13 @@ Deno.test('ensures correct behavior of set() function',():void=>{
     set(o,'nonExistantProperty.Nested.Foo.SomeValue','test-2');
     assertEquals(get(o,'nonExistantProperty.Nested.Foo.SomeValue'),undefined);
 });
+
+Deno.test('test autocreate',():void=>{
+    const { configure, parse, set, get } = create({ autoCreate: true });
+    const o:any = {};
+    set(o,'foo','test-1');
+    assertEquals(get(o,'foo'),'test-1');
+    set(o,'nonExistantProperty.Nested.Foo.SomeValue','test-2');
+    console.log(o);
+    assertEquals(get(o,'nonExistantProperty.Nested.Foo.SomeValue'),'test-2');
+});

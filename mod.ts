@@ -15,6 +15,7 @@ type ObjectPathModule = {
 };
 
 export default function createObjectPathInstance(options?:Partial<ObjectPathConfig>):ObjectPathModule {
+
     const config:ObjectPathConfig = {
         seperator:'.',
         defaultUnsetValue: undefined,
@@ -39,12 +40,19 @@ export default function createObjectPathInstance(options?:Partial<ObjectPathConf
         if(p.length){
             let o = obj;
             for(let i=0;i<p.length-1;i++) {
-                if(o!==null&&typeof o==='object'&& o[p[i]]!==undefined){
-                    o = o[p[i]];
-                }else{
-                    if(config.autoCreate){
-                        o = {};
+                if(o!==null&&typeof o==='object'){
+                    if(!o.hasOwnProperty(p[i])){
+                        if(config.autoCreate){
+                            o[p[i]] = {};
+                            o = o[p[i]];
+                            continue;
+                        }else{
+                            return false;
+                        }
+                    }else{
+                        o = o[p[i]];
                     }
+                }else{
                     return false;
                 }
             }
@@ -58,7 +66,7 @@ export default function createObjectPathInstance(options?:Partial<ObjectPathConf
         const p = parse(path);
         let v = obj;
         for(let i=0;i<p.length;i++) {
-            if(v!==null&&typeof v==='object'&&v[p[i]]!==undefined){
+            if(v!==null&&typeof v==='object'&&v.hasOwnProperty(p[i])){
                 v=v[p[i]];
             }else{
                 return config.defaultUnsetValue;
